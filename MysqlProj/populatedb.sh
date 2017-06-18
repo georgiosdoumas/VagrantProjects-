@@ -1,5 +1,6 @@
 #!/bin/bash
 #This file creates a DB, 1 table, and populates it with rows and columns
+# be sure to do a chmod +x on this file
 MYSQL=$(which mysql)
 $MYSQL -u root -e 'CREATE DATABASE personneldb'
 $MYSQL personneldb -u root << EOF
