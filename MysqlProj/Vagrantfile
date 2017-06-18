@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1024"  # for all following virtual machines, unless specifically set differently
+  end
+  config.vm.define :mysqlsrv do |server|
+    server.vm.box = "puppetlabs/centos-6.6-64-puppet"
+    server.vm.hostname = "mysql-srv" #to be used as: node 'mysql-srv' in puppet file
+    server.vm.network "private_network", ip: "192.168.10.120"
+    server.vm.provision "puppet" do |mysqlpuppet|
+      mysqlpuppet.environment_path = "environments"
+      mysqlpuppet.environment = "mysqlsrv"  # it automatically looks in ./environments/mysqlsrv/manifests for a file named site.pp
+      mysqlpuppet.options = "--verbose" # --debug"
+    end 
+    server.vm.provider "virtualbox" do |m|
+      m.name = "mysql" # the name of the machine on the Virtualbox left pane
+    end
+  end
+  config.vm.define "backsrv" do |back|
+    back.vm.box = "puppetlabs/centos-6.6-64-puppet"
+    back.vm.hostname = "back-srv" #to be used as: node 'back-srv' in puppet file
+    back.vm.network "private_network", ip: "192.168.10.130"
+    back.vm.provision "puppet" do |backpuppet|
+      backpuppet.environment_path = "environments"
+      backpuppet.environment = "backsrv"  # it automatically looks in ./environments/backsrv/manifests for a file named site.pp
+      #backpuppet.options = "--verbose --debug"
+    end 
+    back.vm.provider "virtualbox" do |b|
+      b.memory = "768"  # overrides the general 1024 value for this box
+      b.name = "backup"  # the name of the machine on the Virtualbox left pane
+    end
+  end
+end
