@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"  # for all following virtual machines, unless specifically set differently
   end
   config.vm.define :mysqlsrv do |server|
-    server.vm.box = "puppetlabs/centos-6.6-64-puppet"
+    server.vm.box = "puppetlabs/centos-6.6-64-puppet"  # the root password for these boxes is: puppet ....
     server.vm.hostname = "mysql-srv" #to be used as: node 'mysql-srv' in puppet file
     server.vm.network "private_network", ip: "192.168.10.120"
     server.vm.provision "puppet" do |mysqlpuppet|
@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
     end
   end
   config.vm.define "backsrv" do |back|
-    back.vm.box = "puppetlabs/centos-6.6-64-puppet"
+    back.vm.box = "puppetlabs/centos-6.6-64-puppet"  # ... and these boxes have in the /etc/ssh/sshd_config: PermitRootLogin yes 
     back.vm.hostname = "back-srv" #to be used as: node 'back-srv' in puppet file
     back.vm.network "private_network", ip: "192.168.10.130"
     back.vm.provision "puppet" do |backpuppet|
