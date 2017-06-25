@@ -1,21 +1,21 @@
 #!/bin/bash
-#This file creates a DB, 1 table, and populates it with rows and columns
-# be sure to do a chmod +x on this file
+#This file creates a DB, 1 table in the DB, and populates the table with rows and columns
+SQLCMDS="/vagrant/populatedb.sql"
 MYSQL=$(which mysql)
+DATE=$(date) 
 $MYSQL -u root -e 'CREATE DATABASE personneldb'
-$MYSQL personneldb -u root << EOF
-CREATE TABLE employees (
-   empid int not null,
-   lastname varchar(30),
-   firstname varchar(30),
-   salary float,
-   primary key (empid)
-);
-INSERT INTO employees VALUES (1, 'Blum', 'Rich', 25000.00);
-INSERT INTO employees VALUES (2, 'Blum', 'Barbara', 45000.00);
-INSERT INTO employees VALUES (3, 'Nadel', 'Kate Jane', 34500);
-INSERT INTO employees VALUES (4, 'Taylor', 'Jessica', 52340);
-EOF
-echo "personneldb has been created and table employee has been populated" > /vagrant/dbcreated.lock
+if [ $? -eq 0 ] ; then 
+  echo "personneldb has been created at $DATE " > /vagrant/dbcreated.lock
+else 
+  echo "creation of personneldb failed at $DATE " > /vagrant/dbcreated.lock
+  exit
+fi  
+$MYSQL  -u root personneldb < $SQLCMDS
+if [ $? -eq 0 ] ; then
+  echo "table employee has been created and populated" >> /vagrant/dbcreated.lock
+else 
+  echo "creation and population of table employee failed" >> /vagrant/dbcreated.lock
+  exit
+fi
 $MYSQL personneldb -u root -e 'SELECT * FROM employees' >> /vagrant/dbcreated.lock
 exit
