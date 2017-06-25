@@ -11,7 +11,7 @@ node 'back-srv' {
 
 cron { 
   sql_cron:
-    command => "echo mysql_backup.sh > /dev/pts/0",
+    command => "/vagrant/mysql_backup.sh ",
     user => "root",
     hour => [23],
     minute => [50],
